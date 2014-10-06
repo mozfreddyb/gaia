@@ -107,6 +107,14 @@ suite('Template', function() {
       });
       assert.equal(interpolated, '&gt;');
     });
+
+    test('escape: / => &#x2F;', function() {
+      var tmpl = Template(node);
+      var interpolated = tmpl.interpolate({
+        str: '/'
+      });
+      assert.equal(interpolated, '&#x2F;');
+    });
   });
 
   suite('interpolate: sanitize', function() {
@@ -121,7 +129,7 @@ suite('Template', function() {
       });
       assert.equal(
         interpolated,
-        '&lt;textarea&gt;&lt;p&gt;George &amp; Lenny&lt;/p&gt;'
+        '&lt;textarea&gt;&lt;p&gt;George &amp; Lenny&lt;&#x2F;p&gt;'
       );
 
       node = document.createElement('div');
@@ -132,7 +140,7 @@ suite('Template', function() {
       });
       assert.equal(
         interpolated,
-        '<p>&lt;textarea&gt;&lt;div&gt;George &amp; Lenny&lt;/div&gt;</p>'
+        '<p>&lt;textarea&gt;&lt;div&gt;George &amp; Lenny&lt;&#x2F;div&gt;</p>'
       );
     });
 
@@ -145,7 +153,7 @@ suite('Template', function() {
       });
       assert.equal(
         interpolated,
-        '&lt;script&gt;alert(&quot;hi!&quot;)&lt;/script&gt;'
+        '&lt;script&gt;alert(&quot;hi!&quot;)&lt;&#x2F;script&gt;'
       );
     });
 
@@ -158,7 +166,7 @@ suite('Template', function() {
       });
       assert.equal(
         interpolated,
-        '&lt;textarea&gt;&lt;div&gt;hi!&lt;/div&gt;'
+        '&lt;textarea&gt;&lt;div&gt;hi!&lt;&#x2F;div&gt;'
       );
     });
 
@@ -172,7 +180,8 @@ suite('Template', function() {
       }, { safe: ['bar'] });
       assert.equal(
         interpolated,
-        '&lt;script&gt;alert(&quot;hi!&quot;)&lt;/script&gt;<p>this is ok</p>'
+        '&lt;script&gt;alert(&quot;hi!&quot;)' +
+        '&lt;&#x2F;script&gt;<p>this is ok</p>'
       );
     });
   });
@@ -184,7 +193,7 @@ suite('Template', function() {
 
       assert.equal(
         Template.escape(fixture),
-        '&lt;div&gt;&quot;Hello!&quot;&amp;  &apos; &lt;/div&gt;'
+        '&lt;div&gt;&quot;Hello!&quot;&amp;  &apos; &lt;&#x2F;div&gt;'
       );
     });
 
