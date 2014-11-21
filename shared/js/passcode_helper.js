@@ -7,13 +7,13 @@
   const SET_DIGEST_SALT = 'lockscreen.passcode-lock.digest.salt';
   const SET_DIGEST_ITERATIONS = 'lockscreen.passcode-lock.digest.iterations';
   const SET_DIGEST_ALGORITHM = 'lockscreen.passcode-lock.digest.algorithm';
-  const DEFAULT_ALGORITHM = 'SHA-1';//XXX Update to SHA-256 when bug 554827 lands.
+  const DEFAULT_ALGORITHM = 'SHA-1';//XXX Update to SHA-256 after bug 554827
   const DEFAULT_ITERATIONS = 5000;
 
   var PasscodeHelper = {
     /*
-     * PasscodeHelper.setPassccode(string) -> Promise that resolves to a digest
-     * PasscodeHelper.checkPasscode(string) -> Promise that resolves to a boolean
+     * PasscodeHelper.setPassccode(string) -> Promise, resolves to a digest
+     * PasscodeHelper.checkPasscode(string) -> Promise, resolves to a boolean
      * */
 
     _encode: function (str) {
@@ -95,8 +95,8 @@
         var salt = this._toTypedArray(values[0][SET_DIGEST_SALT]);
         var storedDigest = this._toTypedArray(values[3][SET_DIGEST_VALUE]);
         return this._make_digest(testPass, salt,
-          /*iterations*/ values[1][SET_DIGEST_ITERATIONS],
-          /*algorithm*/  values[2][SET_DIGEST_ALGORITHM]).then(function (digest) {
+          /*iterations*/values[1][SET_DIGEST_ITERATIONS],
+          /*algorithm*/values[2][SET_DIGEST_ALGORITHM]).then(function (digest) {
             var typedDigest = new Uint8Array(digest);
 
             function compareDigests(buf1, buf2) {
