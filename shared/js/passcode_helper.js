@@ -12,8 +12,8 @@
 
   var PasscodeHelper = {
     /*
-     * PasscodeHelper.setPassccode(string) -> Promise, resolves to a digest
-     * PasscodeHelper.checkPasscode(string) -> Promise, resolves to a boolean
+     * PasscodeHelper.setPassccode(string) -> Promise => digest (or false)
+     * PasscodeHelper.checkPasscode(string) -> Promise resolves to a boolean
      * */
 
     _encode: function (str) {
@@ -43,9 +43,9 @@
         'deriveBits'
       ]).then((pwKey) => {
         return this._deriveBits(pwKey, salt, iterations, algorithm);
-      }, (error) => {
-        console.log('PasscodeHelper._derive_bits() failed!', error);
-        return false;
+      }).catch((error) => {
+        console.error('PasscodeHelper: _derive_bits() failed!', error);
+        return Promise.resolve(false);
       });
     },
     setPasscode: function (newPass) {
@@ -78,12 +78,18 @@
             newSettings[SET_DIGEST_ALGORITHM] = algorithm;
             return lock.set(newSettings).then(() => {
               return digestUint8;
+            }).catch((error) => {
+              console.error('PasscodeHelper: Couldnt store new digest');
+              return Promise.resolve(false);
             });
-          }, (error) => {
-            console.log('Pass_make_digest() failed!', error);
-            return false;
+          }).catch((error) => {
+            console.error('PasscodeHelper: Could not make digest:', error);
+            return Promise.resolve(false);
           });
-      }, (error) => { console.log('error at getfromsettings'); });
+      }).catch((error) => {
+        console.error('PasscodeHelper: No Settings?', error);
+        return Promise.resolve(false);
+        });
       return digest;
     },
     checkPasscode: function (testPass) {
@@ -120,9 +126,14 @@
               }
               return true;
             }
-
             return compareDigests(storedDigest, typedDigest);
+          }).catch((error) => {
+            console.error('PasscodeHelper: Couldnt create digest', error);
+            return Promise.resolve(false);
           });
+      }).catch((error) => {
+        console.error('PasscodeHelper: Couldnt get digest Settings:', error);
+        return Promise.resolve(false);
       });
       return result;
     }
