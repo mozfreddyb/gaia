@@ -74,8 +74,8 @@
         var [digestIteration, digestAlgorithm] = values;
         _iterations = parseInt(digestIteration[SET_DIGEST_ITERATIONS]) ||
           DEFAULT_ITERATIONS;
-        _algorithm = (typeof(digestAlgorithm[SET_DIGEST_ALGORITHM]) == 'string') ?
-          values[1][SET_DIGEST_ALGORITHM] : DEFAULT_ALGORITHM;
+        _algorithm = typeof(digestAlgorithm[SET_DIGEST_ALGORITHM]) == 'string' ?
+                     values[1][SET_DIGEST_ALGORITHM] : DEFAULT_ALGORITHM;
 
         return this._makeDigest(newPass, _salt,
           _iterations, _algorithm)
