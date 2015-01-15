@@ -62,8 +62,24 @@
     }
 
     var req = {
+      listeners: {},
       addEventListener: function(name, cb) {
-        req['on' + name] = cb;
+        if (req.listeners[name]) {
+          req.listeners[name].push(cb);
+        }
+        else {
+          req.listeners[name] = [cb];
+        }
+      },
+      then: function(cb, eb) {
+        // error-handler `eb`is never used, since the mock never fails.
+        var promise = new Promise(function (resolve, reject) {
+          req.addEventListener('success', function () {
+            console.log('resolving a SET');
+            resolve(0);
+          });
+        });
+        return promise.then(cb);
       }
     };
 
@@ -71,6 +87,11 @@
       timeouts.push(setTimeout(function() {
         if (req.onsuccess) {
           req.onsuccess();
+        }
+        if ('success' in req.listeners) {
+          req.listeners.success.forEach(function (func) {
+            func();
+          });
         }
       }));
     } else {
@@ -98,6 +119,11 @@
             target: request
           });
         }
+        if ('success' in request.listeners) {
+          request.listeners.success.forEach(function (func) {
+            func();
+          });
+        }
       });
     } catch(e) {
     }
@@ -111,15 +137,47 @@
       resultObj[key] = settings[key];
     }
     var settingsRequest = {
+      listeners: {},
       result: resultObj,
       addEventListener: function(name, cb) {
-        settingsRequest['on' + name] = cb;
+        console.log('adding listener for', name, 'sauce', cb.toSource());
+        if (settingsRequest.listeners[name]) {
+          settingsRequest.listeners[name].push(cb);
+        }
+        else {
+          settingsRequest.listeners[name] = [cb];
+        }
+        console.log('I have now ', settingsRequest.listeners[name].length ,
+                    'listenesr for', name);
+      },
+      then: function(cb, eb) {
+        console.log('cb?', cb.name, cb.toSource());
+        // error-handler `eb`is never used, since the mock never fails.
+        //return Promise.resolve(resultObj).then(cb);
+        var promise = new Promise(function (resolve, reject) {
+          settingsRequest.addEventListener('success', function () {
+            console.log('resolving a GET');
+            resolve(resultObj);
+          });
+        });
+        return promise.then(cb);
       }
     };
     if (!_mSyncRepliesOnly) {
+      console.log("pushin timeouts");
       timeouts.push(setTimeout(function() {
         if (settingsRequest.onsuccess) {
+          console.log("found an onsuccess, w00t");
           settingsRequest.onsuccess();
+        }
+        console.log('going through success listeners');
+        if ('success' in settingsRequest.listeners) {
+          console.log('executing', settingsRequest.listeners.success.length,
+                        'listeners');
+          settingsRequest.listeners.success.forEach(function (func) {
+            console.log('the listener I found is', func.toSource());
+            func();
+          });
         }
       }));
     } else {

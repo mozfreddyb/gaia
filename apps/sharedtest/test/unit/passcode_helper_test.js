@@ -33,6 +33,7 @@ suite('PasscodeHelper:', function() {
     var lock = navigator.mozSettings.createLock();
     var request = lock.set(phSettings);
     request.then(() => {
+      console.log('setup done');
       done();
     });
   });
@@ -42,7 +43,25 @@ suite('PasscodeHelper:', function() {
     MockNavigatorSettings.mTeardown();
   });
 
-  test('checkPasscode with constant salt', function(done) {
+  test('testing the mock', function(done) {
+    const SET_DIGEST_SALT = 'lockscreen.passcode-lock.digest.salt';
+    const SET_DIGEST_ITERATIONS = 'lockscreen.passcode-lock.digest.iterations';
+
+    var lock = navigator.mozSettings.createLock();
+    var a,b;
+    var storedParams = Promise.all([
+      a=lock.get(SET_DIGEST_SALT),
+      b=lock.get(SET_DIGEST_ITERATIONS)
+    ]);
+    a.then(() => { console.log('no biggie for a'); } );
+    b.then(() => { console.log('no biggie for b'); } );
+    return storedParams.then((values) => {
+      console.log('waiting for all values - here:', values);
+      done();
+    });
+
+  });
+  /*test('checkPasscode with constant salt', function(done) {
     var ph = new PasscodeHelper();
     var promise = ph.checkPasscode('1337');
     assert.equal(typeof promise.then, 'function',
@@ -80,5 +99,5 @@ suite('PasscodeHelper:', function() {
       assert.fail(err, '(no exception)', 'Setting the passcode has thrown');
     }
     setPromise.then(onSet, onSetError).then(done, done);
-  });
+  });   **/
 });
