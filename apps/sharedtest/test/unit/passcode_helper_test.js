@@ -5,7 +5,6 @@ require('/shared/test/unit/mocks/mock_navigator_moz_settings.js');
 require('/shared/js/passcode_helper.js');
 
 suite('PasscodeHelper:', function() {
-
   var realMozSettings;
   suiteSetup(function(done) {
     realMozSettings = navigator.mozSettings;
@@ -20,11 +19,11 @@ suite('PasscodeHelper:', function() {
     // constant salt for easier testing
     var phSettings = {};
     // digest for PIN '1337' with salt as below.
-    var digest_nums = [195, 174, 33, 98, 39, 43, 135, 112,
+    var digestNums = [195, 174, 33, 98, 39, 43, 135, 112,
       126, 176, 82, 150, 236, 112, 87, 54,
       96, 60, 208, 18, 86, 178, 19, 20,
       129, 91, 168, 134, 241, 138, 59, 210];
-    var digest1337 = new Uint8Array(digest_nums);
+    var digest1337 = new Uint8Array(digestNums);
     phSettings[SET_DIGEST_VALUE] = digest1337;
     phSettings[SET_DIGEST_SALT] = new Uint8Array([4, 8, 15, 16,
       23, 42, 108, 0]);
@@ -43,14 +42,6 @@ suite('PasscodeHelper:', function() {
     MockNavigatorSettings.mTeardown();
   });
 
-  setup(function() {
-    //
-  });
-
-  teardown(function() {
-  });
-
-
   test('checkPasscode with constant salt', function(done) {
     var ph = new PasscodeHelper();
     var promise = ph.checkPasscode('1337');
@@ -67,8 +58,6 @@ suite('PasscodeHelper:', function() {
     }
     promise.then(onSuccess).catch(onError).then(done).catch(done);
   });
-
-
 
   test('setPasscode and checkPasscode new password', function(done) {
     var ph = new PasscodeHelper();
@@ -92,5 +81,4 @@ suite('PasscodeHelper:', function() {
     }
     setPromise.then(onSet, onSetError).then(done, done);
   });
-
 });

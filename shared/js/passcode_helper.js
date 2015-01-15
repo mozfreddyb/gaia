@@ -19,8 +19,8 @@
 
     this._iterations = DEFAULT_ITERATIONS;
     this._algorithm = DEFAULT_ALGORITHM;
-    this._testPass = undefined;
-    this._salt = undefined;
+    this._testPass = null;
+    this._salt = null;
   };
 
 
@@ -122,7 +122,7 @@
         lock.get(SET_DIGEST_VALUE)
       ]);
       return storedParams.then((values) => {
-        return this._makeAndCompare(values[0], values[1], values[2], values[3]);
+        return this._makeAndCompare(...values);
       })
       .catch((error) => {
           console.error('PasscodeHelper: Couldnt get digest Settings:', error);
@@ -159,6 +159,5 @@
       }
       return true;
     };
-
   exports.PasscodeHelper = PasscodeHelper;
 })(this);
