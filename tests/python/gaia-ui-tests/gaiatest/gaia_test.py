@@ -1154,14 +1154,22 @@ class PasscodeTestCase(GaiaTestCase):
         SET_DIGEST_ITERATIONS = 'lockscreen.passcode-lock.digest.iterations'
         SET_DIGEST_ALGORITHM = 'lockscreen.passcode-lock.digest.algorithm'
 
-        digestNums = [195, 174, 33, 98, 39, 43, 135, 112,
-                      126, 176, 82, 150, 236, 112, 87, 54,
-                      96, 60, 208, 18, 86, 178, 19, 20,
-                      129, 91, 168, 134, 241, 138, 59, 210]
+        def toArrayBuffer(enumerable):
+            """arraybuffer representation in settings is
+               not [foo, bar, baz] but
+               {0: foo, 1: bar, 2: baz}
+
+            """
+            return {idx: el for idx, el in enumerate(enumerable)}
 
         settings = {}
-        settings[SET_DIGEST_VALUE] = digestNums
-        settings[SET_DIGEST_SALT] = [4, 8, 15, 16, 23, 42, 108, 0]
+        settings[SET_DIGEST_VALUE] = toArrayBuffer([
+                                    195, 174, 33, 98, 39, 43, 135, 112,
+                                    126, 176, 82, 150, 236, 112, 87, 54,
+                                    96, 60, 208, 18, 86, 178, 19, 20,
+                                    129, 91, 168, 134, 241, 138, 59, 210])
+        settings[SET_DIGEST_SALT] = toArrayBuffer([4, 8, 15, 16,
+                                                  23, 42, 108, 0])
         settings[SET_DIGEST_ITERATIONS] = 1000
         settings[SET_DIGEST_ALGORITHM] = 'SHA-1'
 
